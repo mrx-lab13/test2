@@ -31,6 +31,30 @@
     });
   }
 
+  /* ---- champion row carousel ---- */
+  Array.prototype.forEach.call(document.querySelectorAll('.champ-row'), function (row) {
+    var track = row.querySelector('.champ-scroll');
+    var prev = row.querySelector('[data-scroll="prev"]');
+    var next = row.querySelector('[data-scroll="next"]');
+    if (!track || !prev || !next) return;
+
+    function step() {
+      var card = track.querySelector('.champ');
+      var w = card ? card.getBoundingClientRect().width + 12 : 200;
+      return Math.max(w, Math.floor(track.clientWidth / w) * w);
+    }
+    function sync() {
+      var max = track.scrollWidth - track.clientWidth - 2;
+      prev.disabled = track.scrollLeft <= 2;
+      next.disabled = track.scrollLeft >= max;
+    }
+    prev.addEventListener('click', function () { track.scrollBy({ left: -step(), behavior: 'smooth' }); });
+    next.addEventListener('click', function () { track.scrollBy({ left: step(), behavior: 'smooth' }); });
+    track.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  });
+
   /* ---- scroll reveal ---- */
   var targets = document.querySelectorAll('.rv');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
